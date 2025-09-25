@@ -3,71 +3,82 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use App\Models\User; 
+use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
+use Carbon\Carbon;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/home'; // Normal login redirect
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
     }
 
-    /**
-     * Get the login username to be used by the controller.
-     *
-     * @return string
-     */
     public function username()
     {
         return 'name';
     }
 
     /**
-     * Attempt to log the user into the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return bool
+     * Attempt login with MD5 password and reCAPTCHA
      */
     protected function attemptLogin(Request $request)
     {
-        $user = \App\User::where([
-            'name' => $request->name,
-            'password' => md5($request->password)
-        ])->first();
-       
-        if ($user) {
-            $this->guard()->login($user, $request->has('remember'));
+        $request->validate([
+            'name' => 'required|string',
+            'password' => 'required|string',
+            'g-recaptcha-response' => 'required|captcha',
+        ]);
 
+        // Find user by name + MD5 password
+        $user = \App\User::where('name', $request->name)
+                    ->where('password', md5($request->password))
+                    ->first();
+
+        if ($user) {
+            // Login the user
+            $this->guard()->login($user, $request->has('remember'));
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Redirect after login based on atLoginDate (Bangladesh timezone)
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        $tz = 'Asia/Dhaka'; // Bangladesh timezone
+
+        if (is_null($user->atLoginDate)) {
+            // Null → add 30 days and go to changepassword
+            $user->atLoginDate = Carbon::now($tz)->addDays(30);
+            $user->save();
+            return redirect('/changepassword');
+        }
+
+        // Today date in Bangladesh timezone
+        $today = Carbon::now($tz)->startOfDay();
+        $loginDate = Carbon::parse($user->atLoginDate, $tz)->startOfDay();
+
+        if ($loginDate->lt($today)) {
+            // DB date < today → change password
+            return redirect('/changepassword');
+        } else {
+            // DB date >= today → go home
+            return redirect('/home');
+        }
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login');
     }
 }

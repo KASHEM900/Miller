@@ -49,7 +49,8 @@ class User extends Authenticatable
         'signature_file',
         'active_status',
         'current_office_id',
-        'allowed_divisions'
+        'allowed_divisions',
+        //'atLoginDate'
     ];
 
     /**
@@ -72,7 +73,8 @@ class User extends Authenticatable
 		'district_id' => 'int',
 		'upazila_id' => 'int',
 		'user_type' => 'int',
-		'active_status' => 'int'
+		'active_status' => 'int',
+        'atLoginDate' => 'datetime'
     ];
 
     // public static function uploadAvatar($image)

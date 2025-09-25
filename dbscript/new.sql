@@ -1,3 +1,7 @@
+----- 26 September-----
+
+ALTER TABLE users
+ADD COLUMN atLoginDate DATETIME NULL AFTER password;
 
 ----- 23 April New Changed Start -----
 
