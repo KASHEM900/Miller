@@ -54,7 +54,7 @@ class ResetPasswordController extends Controller
         if ($updatePassword && Hash::check($request->token, $updatePassword->token))
         {
             $user = User::where('email', $request->email)
-                      ->update(['password' => md5($request->password)]);
+                      ->update(['password' => md5($request->password),'atLoginDate' => null]);
       
             DB::table('password_resets')->where(['email'=> $request->email])->delete();
       

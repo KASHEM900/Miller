@@ -496,6 +496,7 @@ class UserController extends Controller
 
         $user = User::find(Auth::user()->id);
         $user->password = $request->get('password');
+        //$user->atLoginDate = null;
         $user->save();
 
         return redirect()->route('changepassword')

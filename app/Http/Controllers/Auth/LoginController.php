@@ -59,14 +59,16 @@ class LoginController extends Controller
 
         if (is_null($user->atLoginDate)) {
             // Null → add 30 days and go to changepassword
-            $user->atLoginDate = Carbon::now($tz)->addDays(30);
+            //$user->atLoginDate = Carbon::now($tz)->addDays(30);
+            $user->atLoginDate = Carbon::now($tz);
             $user->save();
             return redirect('/changepassword');
         }
 
         // Today date in Bangladesh timezone
         $today = Carbon::now($tz)->startOfDay();
-        $loginDate = Carbon::parse($user->atLoginDate, $tz)->startOfDay();
+        $loginDate = Carbon::parse($user->atLoginDate, $tz)->startOfDay()->addDays(30);
+        //dd($loginDate);
 
         if ($loginDate->lt($today)) {
             // DB date < today → change password
