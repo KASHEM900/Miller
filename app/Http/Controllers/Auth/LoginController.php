@@ -62,7 +62,7 @@ class LoginController extends Controller
             //$user->atLoginDate = Carbon::now($tz)->addDays(30);
             $user->atLoginDate = Carbon::now($tz);
             $user->save();
-            return redirect('/changepassword');
+            return redirect('/loginchangepassword');
         }
 
         // Today date in Bangladesh timezone
@@ -72,7 +72,7 @@ class LoginController extends Controller
 
         if ($loginDate->lt($today)) {
             // DB date < today → change password
-            return redirect('/changepassword');
+            return redirect('/loginchangepassword');
         } else {
             // DB date >= today → go home
             return redirect('/home');

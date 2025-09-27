@@ -489,6 +489,7 @@ class UserController extends Controller
 
     public function changeuserpassword(Request $request)
     {
+        //dd($request);
         $request->validate([
             'password' => 'required|min:8',
             'password-confirm' => 'required|same:password'
@@ -500,6 +501,30 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->route('changepassword')
+                        ->with('success','পাসওয়ার্ড সফলভাবে আপডেট হয়েছে');
+    }
+
+   public function loginchangepassword()
+    {
+        return view('users.loginchangepassword');
+    }
+
+    public function loginchangeuserpassword(Request $request)
+    {
+        //dd($request);
+        $request->validate([
+            'password' => 'required|min:8',
+            'password-confirm' => 'required|same:password'
+        ]);
+
+        $user = User::find(Auth::user()->id);
+        $user->password = $request->get('password');
+        //$user->atLoginDate = null;
+        $user->save();
+        // Logout user
+            Auth::logout();
+
+        return redirect()->route('login')
                         ->with('success','পাসওয়ার্ড সফলভাবে আপডেট হয়েছে');
     }
 

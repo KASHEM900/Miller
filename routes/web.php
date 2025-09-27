@@ -79,6 +79,10 @@ Route::get('/myprofile', function () {
 
 Route::get('changepassword', 'UserController@changepassword')->name('changepassword')->middleware('auth');
 Route::post('changeuserpassword', 'UserController@changeuserpassword')->name('changeuserpassword');
+
+Route::get('loginchangepassword', 'UserController@loginchangepassword')->name('loginchangepassword');
+Route::post('loginchangeuserpassword', 'UserController@loginchangeuserpassword')->name('loginchangeuserpassword');
+
 Route::get('changeotherpassword/{id}', 'UserController@changeotherpassword')->name('changeotherpassword');
 Route::post('changeotheruserpassword/{id}', 'UserController@changeotheruserpassword')->name('changeotheruserpassword');
 
@@ -120,6 +124,9 @@ Route::patch('users.update6', 'UserController@update6')->name('users.update6');
 
 Route::post('filterOffices', 'OfficeController@filterOffices')->name('filterOffices');
 Route::post('searchSubmitMiller', 'MillerRegisterController@searchSubmitMiller')->name('searchSubmitMiller');
+
+//Route::get('loginchangepassword', 'MillerRegisterController@loginchangepassword')->name('loginchangepassword');
+//Route::post('loginchangeuserpassword', 'MillerRegisterController@loginchangeuserpassword')->name('loginchangeuserpassword');
 
 Route::get('searchPasscode', 'MillerController@searchPasscode')->name('searchPasscode')->middleware('auth');
 
